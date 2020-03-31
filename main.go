@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,15 +10,13 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 )
 
-var token  = "-q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x"
+var token = "-q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x"
 var base = "https://api.genius.com/"
 
-func main()  {
+func main() {
 	searchQuery := os.Args[1:][0]
-	reader := bufio.NewReader(os.Stdin)
 	var song Hit
 
 	res, err := searchRequest(searchQuery)
@@ -27,11 +24,11 @@ func main()  {
 
 	hits := res.Response.Hits
 
-	if len(hits) == 1{
+	if len(hits) == 1 {
 
 		song = hits[0]
 
-	} else if len(hits) == 0{
+	} else if len(hits) == 0 {
 
 		checkErr(errors.New("song not found("))
 
@@ -45,12 +42,14 @@ func main()  {
 		}
 		fmt.Print(stringBuilder + "Choose song(index): ")
 
-		text, _ := reader.ReadString('\n')
-		songName := strings.Split(text, "\n")[0]
-		songIndex, err := strconv.Atoi(songName)
+		var text string
+		_, err = fmt.Scan(&text)
 		checkErr(err)
 
-		if songIndex > len(hits) || songIndex < 1{
+		songIndex, err := strconv.Atoi(text)
+		checkErr(err)
+
+		if songIndex > len(hits) || songIndex < 1 {
 			checkErr(errors.New("invalid song index"))
 
 		}
@@ -62,7 +61,7 @@ func main()  {
 	checkErr(err)
 
 	fmt.Println(text)
-	fmt.Println("Lyrics from: "+song.Result.Url)
+	fmt.Println("Lyrics from: " + song.Result.Url)
 }
 
 func checkErr(err error) bool {
@@ -105,7 +104,7 @@ func searchRequest(songName string) (*Search, error) {
 
 func scrapperErr(err error) bool {
 	if err != nil {
-		log.Print("ScrapperError: "+err.Error())
+		log.Print("ScrapperError: " + err.Error())
 		return true
 	}
 	return false
@@ -113,12 +112,12 @@ func scrapperErr(err error) bool {
 
 func scrapeText(url string) (string, error) {
 	resp, err := http.Get(url)
-	if scrapperErr(err){
+	if scrapperErr(err) {
 		return "", err
 	}
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if scrapperErr(err){
+	if scrapperErr(err) {
 		return "", err
 	}
 
