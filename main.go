@@ -78,7 +78,12 @@ func searchRequest(songName string) (*Search, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Bearer -q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x")
+	token, ok := token()
+	if !ok {
+		panic("handle me please")
+	}
+
+	req.Header.Add("Authorization", "Bearer - "+token)
 
 	resp, err := client.Do(req)
 	if checkErr(err) {
