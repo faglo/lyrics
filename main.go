@@ -12,7 +12,6 @@ import (
 	"strconv"
 )
 
-var token = "-q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x"
 var base = "https://api.genius.com/"
 
 func main() {
@@ -80,7 +79,7 @@ func searchRequest(songName string) (*Search, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Authorization", "Bearer -q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x")
 
 	resp, err := client.Do(req)
 	if checkErr(err) {
