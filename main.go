@@ -12,8 +12,6 @@ import (
 	"strconv"
 )
 
-var base = "https://api.genius.com/"
-
 func main() {
 	searchQuery := os.Args[1:][0]
 	var song Hit
@@ -74,7 +72,7 @@ func checkErr(err error) bool {
 func searchRequest(songName string) (*Search, error) {
 	client := http.Client{}
 
-	req, err := http.NewRequest("GET", base+"search?q="+songName, nil)
+	req, err := http.NewRequest("GET", "https://api.genius.com/search?q="+songName, nil)
 	if checkErr(err) {
 		return nil, err
 	}
