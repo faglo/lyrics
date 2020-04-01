@@ -5,4 +5,8 @@
 - Enter to directory and compile files
 - `cd lyrics && go build`
 - Simply start the app
-- `./lyrics the libertines time for heroes`
+- `./lyrics The libertines time for heroes`
+### Additional
+- _You can delete your token by starting like that:_ \
+`./lyrics --delete`
+
