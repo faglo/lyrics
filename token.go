@@ -6,30 +6,45 @@ import (
 	"runtime"
 )
 
-func token() (token string, ok bool) {
-	if t := os.Getenv("GENIUS_TOKEN"); t != "" {
-		return t, true
-	}
-
-	var path string
-
+func getPath() (path string, dirs string) {
 	switch runtime.GOOS {
 	case "windows":
-		path = os.Getenv("APPDATA") + "/lyrics/genius"
+		dirs = os.Getenv("APPDATA") + "/lyrics/"
 	case "linux":
 	case "freebsd":
 	case "openbsd":
 	case "darwin":
-		path = os.Getenv("HOME") + "/.config/lyrics/genius"
+		dirs = os.Getenv("HOME") + "/.config/lyrics/"
 	default:
 		panic("unsupported system")
 	}
+	path = dirs + "genius"
+	return
+}
 
+func token() (token string, ok bool) {
+	if t := os.Getenv("GENIUS"); t != "" {
+		return t, true
+	}
+	path, _ := getPath()
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return
 	}
-
 	token, ok = string(b), true
 	return
+}
+
+func setToken(token string) {
+	path, dirs := getPath()
+	err := os.MkdirAll(dirs, os.ModePerm)
+	checkErr(err)
+	err = ioutil.WriteFile(path, []byte(token), 0644)
+	checkErr(err)
+}
+
+func removeToken() {
+	path, _ := getPath()
+	err := os.Remove(path)
+	checkErr(err)
 }

@@ -15,23 +15,20 @@ import (
 
 func main() {
 	searchQuery := os.Args[1:][0]
+	if searchQuery == "--delete" {
+		removeToken()
+		fmt.Println("Successful")
+		os.Exit(0)
+	}
 	var song Hit
-
 	res, err := searchRequest(searchQuery)
 	checkErr(err)
-
 	hits := res.Response.Hits
-
 	if len(hits) == 1 {
-
 		song = hits[0]
-
 	} else if len(hits) == 0 {
-
 		checkErr(errors.New("song not found("))
-
 	} else {
-
 		stringBuilder := ""
 		for i, elem := range hits {
 			if elem.Type == "song" {
@@ -39,25 +36,18 @@ func main() {
 			}
 		}
 		fmt.Print(stringBuilder + "Choose song(index): ")
-
 		var text string
 		_, err = fmt.Scan(&text)
 		checkErr(err)
-
 		songIndex, err := strconv.Atoi(text)
 		checkErr(err)
-
 		if songIndex > len(hits) || songIndex < 1 {
 			checkErr(errors.New("invalid song index"))
-
 		}
-
 		song = hits[songIndex-1]
 	}
-
 	text, err := scrapeText(song.Result.Url)
 	checkErr(err)
-
 	fmt.Println(text)
 	fmt.Println("Lyrics from: " + song.Result.Url)
 }
@@ -72,36 +62,37 @@ func checkErr(err error) bool {
 
 func searchRequest(songName string) (*Search, error) {
 	client := http.Client{}
-
 	req, err := http.NewRequest("GET", "https://api.genius.com/search?q="+songName, nil)
 	if checkErr(err) {
 		return nil, err
 	}
-
 	token, ok := token()
 	if !ok {
-		panic("handle me please")
+		var text string
+		fmt.Print("Enter your Genius.com token(Enter 0 for use without token): ")
+		_, err = fmt.Scan(&text)
+		checkErr(err)
+		if text == "0" {
+			text = "-q1tRGBZMEOk6JewZCC_KWZBxyFSg9nccGlX11Cb3MxpGpzWG4FBSJIXCJS33D3x"
+		}
+		setToken(text)
+		token = text
 	}
-
-	req.Header.Add("Authorization", "Bearer - "+token)
-
+	req.Header.Add("Authorization", "Bearer "+token)
 	resp, err := client.Do(req)
 	if checkErr(err) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
 	body, err := ioutil.ReadAll(resp.Body)
 	if checkErr(err) {
 		return nil, err
 	}
-
 	var search Search
 	err = json.Unmarshal(body, &search)
 	if checkErr(err) {
 		return nil, err
 	}
-
 	return &search, nil
 }
 
@@ -118,12 +109,10 @@ func scrapeText(url string) (string, error) {
 	if scrapperErr(err) {
 		return "", err
 	}
-
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if scrapperErr(err) {
 		return "", err
 	}
-
 	result := doc.Find(".lyrics").Text()
 	return result, nil
 }
