@@ -7,6 +7,6 @@
 - Simply start the app
 - `./lyrics The libertines time for heroes`
 ### Additional
-- _You can delete token by starting like that:_  \
+- _You can delete token by starting like that:_ \
 `./lyrics --delete`
 
